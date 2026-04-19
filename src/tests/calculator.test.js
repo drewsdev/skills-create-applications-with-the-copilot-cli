@@ -3,6 +3,9 @@ const {
   subtraction,
   multiplication,
   division,
+  modulo,
+  power,
+  squareRoot,
 } = require("../calculator");
 
 describe("calculator functions", () => {
@@ -59,6 +62,48 @@ describe("calculator functions", () => {
 
     test("throws on division by zero", () => {
       expect(() => division(20, 0)).toThrow("Cannot divide by zero.");
+    });
+  });
+
+  describe("modulo", () => {
+    test("returns remainder (image example: 5 % 2)", () => {
+      expect(modulo(5, 2)).toBe(1);
+    });
+
+    test("returns remainder from positive numbers", () => {
+      expect(modulo(10, 3)).toBe(1);
+    });
+
+    test("returns zero when evenly divisible", () => {
+      expect(modulo(12, 4)).toBe(0);
+    });
+  });
+
+  describe("power", () => {
+    test("raises base to exponent (image example: 2 ^ 3)", () => {
+      expect(power(2, 3)).toBe(8);
+    });
+
+    test("raises base to exponent", () => {
+      expect(power(2, 5)).toBe(32);
+    });
+
+    test("supports fractional exponents", () => {
+      expect(power(9, 0.5)).toBeCloseTo(3);
+    });
+  });
+
+  describe("squareRoot", () => {
+    test("returns square root (image example: sqrt(16))", () => {
+      expect(squareRoot(16)).toBe(4);
+    });
+
+    test("returns square root for non-negative number", () => {
+      expect(squareRoot(81)).toBe(9);
+    });
+
+    test("throws on negative number", () => {
+      expect(() => squareRoot(-1)).toThrow("Cannot calculate square root of a negative number.");
     });
   });
 });

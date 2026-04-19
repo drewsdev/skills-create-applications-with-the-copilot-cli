@@ -1,11 +1,14 @@
 #!/usr/bin/env node
 
 /**
- * Node.js CLI calculator with four basic operations:
+ * Node.js CLI calculator with basic arithmetic and advanced operations:
  * - addition
  * - subtraction
  * - multiplication
  * - division
+ * - modulo
+ * - exponentiation (power)
+ * - square root
  */
 function addition(a, b) {
   return a + b;
@@ -27,6 +30,22 @@ function division(a, b) {
   return a / b;
 }
 
+function modulo(a, b) {
+  return a % b;
+}
+
+function power(base, exponent) {
+  return base ** exponent;
+}
+
+function squareRoot(n) {
+  if (n < 0) {
+    throw new Error("Cannot calculate square root of a negative number.");
+  }
+
+  return Math.sqrt(n);
+}
+
 const operations = {
   add: addition,
   addition,
@@ -40,6 +59,12 @@ const operations = {
   divide: division,
   division,
   "/": division,
+  modulo,
+  "%": modulo,
+  power,
+  "^": power,
+  sqrt: squareRoot,
+  squareroot: squareRoot,
 };
 
 const operationSymbols = {
@@ -55,17 +80,26 @@ const operationSymbols = {
   divide: "/",
   division: "/",
   "/": "/",
+  modulo: "%",
+  "%": "%",
+  power: "^",
+  "^": "^",
+  sqrt: "sqrt",
+  squareroot: "sqrt",
 };
 
 function printUsage() {
-  console.error("Usage: node src/calculator.js <operation> <number1> <number2>");
-  console.error("Operations: add|addition|+, subtract|subtraction|-, multiply|multiplication|*, divide|division|/");
+  console.error("Usage: node src/calculator.js <operation> <number1> [number2]");
+  console.error(
+    "Operations: add|addition|+, subtract|subtraction|-, multiply|multiplication|*, divide|division|/, modulo|%, power|^, sqrt|squareroot"
+  );
 }
 
 function runCli() {
   const [operation, rawA, rawB] = process.argv.slice(2);
+  const unaryOperations = new Set(["sqrt", "squareroot"]);
 
-  if (!operation || rawA === undefined || rawB === undefined) {
+  if (!operation || rawA === undefined || (!unaryOperations.has(operation) && rawB === undefined)) {
     printUsage();
     process.exitCode = 1;
     return;
@@ -80,14 +114,28 @@ function runCli() {
   }
 
   const a = Number(rawA);
-  const b = Number(rawB);
-  if (!Number.isFinite(a) || !Number.isFinite(b)) {
-    console.error("Both inputs must be valid numbers.");
+  if (!Number.isFinite(a)) {
+    console.error("Input must be a valid number.");
     process.exitCode = 1;
     return;
   }
 
   try {
+    const isUnary = unaryOperations.has(operation);
+    if (isUnary) {
+      const result = calculatorOperation(a);
+      const symbol = operationSymbols[operation];
+      console.log(`${symbol}(${a}) = ${result}`);
+      return;
+    }
+
+    const b = Number(rawB);
+    if (!Number.isFinite(b)) {
+      console.error("Both inputs must be valid numbers.");
+      process.exitCode = 1;
+      return;
+    }
+
     const result = calculatorOperation(a, b);
     const symbol = operationSymbols[operation];
     console.log(`${a} ${symbol} ${b} = ${result}`);
@@ -106,5 +154,8 @@ module.exports = {
   subtraction,
   multiplication,
   division,
+  modulo,
+  power,
+  squareRoot,
   runCli,
 };
